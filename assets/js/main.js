@@ -13,12 +13,8 @@ Ogni post dovrà avere le informazioni necessarie per stampare la relativa card:
 Non è necessario creare date casuali
 Per le immagini va bene utilizzare qualsiasi servizio di placeholder ad es. Unsplash (https://unsplash.it/300/300?image=<id>)
 Milestone 2 - Prendendo come riferimento il layout di esempio presente nell'html, stampiamo i post del nostro feed.
-Milestone 3 - Se clicchiamo sul tasto "Mi Piace" cambiamo il colore al testo del bottone e incrementiamo il counter dei likes relativo.
-Salviamo in un secondo array gli id dei post ai quali abbiamo messo il like.
 BONUS:
 Formattare le date in formato italiano (gg/mm/aaaa)
-Gestire l'assenza dell'immagine profilo con un elemento di fallback che contiene le iniziali dell'utente (es. Luca Formicola > LF).
-Al click su un pulsante "Mi Piace" di un post, se abbiamo già cliccato dobbiamo decrementare il contatore e cambiare il colore del bottone.
 */
 
 const posts = [
@@ -79,22 +75,33 @@ const posts = [
     }
 ];
 
+function getInitials(name) {
+    return name.split(' ').map(word => word[0].toUpperCase()).join('');
+}
+
 console.log( posts );
 
 posts.forEach(post => {
     const { id, content, media, author, likes } = post;
     const { name, image } = author;
 
+    const initials = getInitials(name);
+
+/*
+Gestire l'assenza dell'immagine profilo con un elemento di fallback che contiene le iniziali dell'utente (es. Luca Formicola > LF).
+*/
+    const profileImage = image || getInitials(name);
+
     document.querySelector("#container").innerHTML += `
     <div class="post">
         <div class="post__header">
             <div class="post-meta">                    
                 <div class="post-meta__icon">
-                    <img class="profile-pic" src="${image}" alt="${name}">                    
+                ${image ? `<img class="profile-pic" src="${image}" alt="${name}">` : `<div class="profile-initials">${initials}</div>`}                      
                 </div>
                 <div class="post-meta__data">
                     <div class="post-meta__author">${name}</div>
-                    <div class="post-meta__time">4 mesi fa</div>
+                    <div class="post-meta__time"> INSERIRE QUI: DIFFERENZA TRA DATA ATTUALE E .CREATED </div>
              </div>                    
             </div>
         </div>
@@ -117,4 +124,42 @@ posts.forEach(post => {
         </div>            
     </div>
     `
-})
+});
+
+/*
+Salviamo in un secondo array gli id dei post ai quali abbiamo messo il like.
+*/
+let likedPosts = [];
+
+/*
+Milestone 3 - Se clicchiamo sul tasto "Mi Piace" cambiamo il colore al testo del bottone e incrementiamo il counter dei likes relativo.
+Al click su un pulsante "Mi Piace" di un post, se abbiamo già cliccato dobbiamo decrementare il contatore e cambiare il colore del bottone.
+*/
+document.querySelectorAll('.like-button').forEach(button => {
+    button.addEventListener('click', function(event) {
+        event.preventDefault();
+
+        const { dataset, classList } = this;
+        const { postid } = dataset;
+
+        const label = this.querySelector('.like-button__label');
+        const icon = this.querySelector('.like-button__icon');
+
+        const counter = document.querySelector(`#like-counter-${postid}`);
+
+        if (classList.contains('liked')) {
+            classList.remove('liked');
+            label.style.color = '';
+            icon.style.color = '';
+            counter.textContent = parseInt(counter.textContent) - 1;
+            likedPosts = likedPosts.filter(id => id !== postid);
+        } else {
+            classList.add('liked');
+            label.style.color = 'red';
+            icon.style.color = 'red';
+            counter.textContent = parseInt(counter.textContent) + 1;
+            likedPosts.push(postid);
+        }
+        console.log(likedPosts);
+    });
+});
