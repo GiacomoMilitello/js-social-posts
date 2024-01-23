@@ -27,7 +27,7 @@ const posts = [
             "image": "https://unsplash.it/300/300?image=15"
         },
         "likes": 80,
-        "created": "2021-06-25"
+        "created": "06-25-2021"
     },
     {
         "id": 2,
@@ -38,7 +38,7 @@ const posts = [
             "image": "https://unsplash.it/300/300?image=10"
         },
         "likes": 120,
-        "created": "2021-09-03"
+        "created": "09-03-2021"
     },
     {
         "id": 3,
@@ -49,7 +49,7 @@ const posts = [
             "image": "https://unsplash.it/300/300?image=20"
         },
         "likes": 78,
-        "created": "2021-05-15"
+        "created": "05-15-2021"
     },
     {
         "id": 4,
@@ -60,7 +60,7 @@ const posts = [
             "image": null
         },
         "likes": 56,
-        "created": "2021-04-03"
+        "created": "04-03-2021"
     },
     {
         "id": 5,
@@ -71,7 +71,7 @@ const posts = [
             "image": "https://unsplash.it/300/300?image=29"
         },
         "likes": 95,
-        "created": "2021-03-05"
+        "created": "03-05-2021"
     }
 ];
 
@@ -79,10 +79,19 @@ function getInitials(name) {
     return name.split(' ').map(word => word[0].toUpperCase()).join('');
 }
 
+function getTimeDifferenceInMonths(dateString) {
+    const postDate = new Date(dateString);
+    const today = new Date();
+    const differenceInTime = today.getTime() - postDate.getTime();
+    const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+    const differenceInMonths = Math.round(differenceInDays / 30.44);
+    return differenceInMonths;
+}
+
 console.log( posts );
 
 posts.forEach(post => {
-    const { id, content, media, author, likes } = post;
+    const { id, content, media, author, likes, created } = post;
     const { name, image } = author;
 
     const initials = getInitials(name);
@@ -91,6 +100,7 @@ posts.forEach(post => {
 Gestire l'assenza dell'immagine profilo con un elemento di fallback che contiene le iniziali dell'utente (es. Luca Formicola > LF).
 */
     const profileImage = image || getInitials(name);
+    const timeDifference = getTimeDifferenceInMonths(created);
 
     document.querySelector("#container").innerHTML += `
     <div class="post">
@@ -101,7 +111,7 @@ Gestire l'assenza dell'immagine profilo con un elemento di fallback che contiene
                 </div>
                 <div class="post-meta__data">
                     <div class="post-meta__author">${name}</div>
-                    <div class="post-meta__time"> INSERIRE QUI: DIFFERENZA TRA DATA ATTUALE E .CREATED </div>
+                    <div class="post-meta__time">${timeDifference} mesi fa</div>
              </div>                    
             </div>
         </div>
